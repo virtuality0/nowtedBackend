@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/controllers/user.ts","./src/middlewares/validate.ts","./src/routes/user.ts","./src/utils/prismaclient.ts","./src/zodschemas/user.ts"],"version":"5.8.3"}
+{"root":["./custom.d.ts","./src/index.ts","./src/controllers/folder.ts","./src/controllers/note.ts","./src/controllers/user.ts","./src/middlewares/auth.ts","./src/middlewares/validate.ts","./src/routes/folder.ts","./src/routes/note.ts","./src/routes/user.ts","./src/utils/prismaclient.ts","./src/zodschemas/folder.ts","./src/zodschemas/note.ts","./src/zodschemas/user.ts"],"version":"5.8.3"}

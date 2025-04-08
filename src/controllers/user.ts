@@ -8,7 +8,7 @@ export const signUp = async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.findFirst({
       where: {
-        username,
+        username: username,
       },
     });
     if (user) {
@@ -44,7 +44,7 @@ export const signin = async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.findFirst({
       where: {
-        username,
+        username: username,
       },
     });
     if (!user) {
@@ -65,8 +65,17 @@ export const signin = async (req: Request, res: Response) => {
         id: user.id,
         username: user.username,
       },
-      process.env.JWT_SECRET ?? ""
+      process.env.JWT_SECRET ?? "",
+      { expiresIn: "24h" }
     );
+
+    const cookieOptions = {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: true,
+    };
+
+    res.cookie("Authorization", token, cookieOptions);
 
     res.json({
       msg: "Signin in successfully",
