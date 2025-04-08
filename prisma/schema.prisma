@@ -1,0 +1,33 @@
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id String @id @default(uuid())
+  username String @unique
+  password String
+}
+
+model Note{
+  id String @id @default(uuid())
+  title String 
+  content String
+  createdAt DateTime @default(now())
+  modifiedAt DateTime @default(now())  
+  isDeleted Boolean @default(false)
+  folder Folder @relation(fields : [folderId], references: [id], onDelete: Cascade)
+  folderId String
+}
+
+model Folder {
+  id String @id @default(uuid())
+  name String 
+  createdAt DateTime @default(now())
+  modifiedAt DateTime @default(now())
+  content Note[] 
+}
