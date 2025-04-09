@@ -4,11 +4,22 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const signUp = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
+  const { email, username, password } = req.body;
   try {
     const user = await prisma.user.findFirst({
       where: {
-        username: username,
+        OR: [
+          {
+            username: {
+              equals: username,
+            },
+          },
+          {
+            email: {
+              equals: email,
+            },
+          },
+        ],
       },
     });
     if (user) {
@@ -23,6 +34,7 @@ export const signUp = async (req: Request, res: Response) => {
     await prisma.user.create({
       data: {
         username,
+        email,
         password: hashedPassword,
       },
     });

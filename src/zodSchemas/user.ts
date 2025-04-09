@@ -13,4 +13,5 @@ export const userSchema = z.object({
       /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/,
       "Password must be atleast 8 character long and contain atleast 1 number, 1 letter and one special character"
     ),
+  email: z.string().trim().email("Not a valid email."),
 });
