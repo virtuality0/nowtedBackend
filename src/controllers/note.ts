@@ -3,12 +3,14 @@ import prisma from "../utils/prismaClient";
 
 const add = async (req: Request, res: Response) => {
   const { title, folderId, content } = req.body;
+  const preview = content.slice(0, 15) + (content.length > 15 ? "..." : "");
   try {
     const note = await prisma.note.create({
       data: {
         title,
         folderId,
         content,
+        preview,
       },
     });
 
@@ -25,9 +27,22 @@ const add = async (req: Request, res: Response) => {
   }
 };
 
-const getAll = async (req: Request, res: Response) => {
+const getByFolderId = async (req: Request, res: Response) => {
   const folderId = req.query.folderId ?? "";
   try {
+    const folder = await prisma.folder.findFirst({
+      where: {
+        id: folderId.toString(),
+      },
+    });
+
+    if (!folder) {
+      res.status(400).json({
+        msg: "Invalid folder id.",
+      });
+
+      return;
+    }
     const notes = await prisma.note.findMany({
       where: {
         folderId: {
@@ -35,10 +50,15 @@ const getAll = async (req: Request, res: Response) => {
         },
         isDeleted: false,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     res.json({
       data: notes,
+      folderName: folder.name,
+      total: notes.length,
     });
   } catch (err) {
     res.status(500).json({
@@ -121,4 +141,62 @@ const restore = async (req: Request, res: Response) => {
   }
 };
 
-export { add, getAll, update, deleteNote, restore };
+const recent = async (req: Request, res: Response) => {
+  try {
+    const notes = await prisma.note.findMany({
+      where: {
+        isDeleted: false,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.json({
+      data: notes,
+      total: notes.length,
+    });
+  } catch (err) {
+    res.status(500).json({
+      msg: `Internal Server Error \n ${(err as Error).message} \n ${
+        (err as Error).stack ?? ""
+      }`,
+    });
+  }
+};
+
+const getById = async (req: Request, res: Response) => {
+  const noteId = req.params.noteId ?? "";
+  try {
+    const note = await prisma.note.findFirst({
+      where: {
+        id: {
+          equals: noteId.toString(),
+        },
+        isDeleted: false,
+      },
+      include: {
+        folder: true,
+      },
+    });
+
+    if (!note) {
+      res.status(400).json({
+        msg: "Invalid note id",
+      });
+      return;
+    }
+
+    res.json({
+      data: note,
+    });
+  } catch (err) {
+    res.status(500).json({
+      msg: `Internal Server Error \n ${(err as Error).message} \n ${
+        (err as Error).stack ?? ""
+      }`,
+    });
+  }
+};
+
+export { add, getByFolderId, update, deleteNote, restore, recent, getById };

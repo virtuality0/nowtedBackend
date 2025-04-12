@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { CookieOptions, Request, Response } from "express";
 import prisma from "../utils/prismaClient";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-export const signUp = async (req: Request, res: Response) => {
+const signUp = async (req: Request, res: Response) => {
   const { email, username, password } = req.body;
   try {
     const user = await prisma.user.findFirst({
@@ -51,7 +51,7 @@ export const signUp = async (req: Request, res: Response) => {
   }
 };
 
-export const signin = async (req: Request, res: Response) => {
+const signin = async (req: Request, res: Response) => {
   const { username, password } = req.body;
   try {
     const user = await prisma.user.findFirst({
@@ -81,16 +81,17 @@ export const signin = async (req: Request, res: Response) => {
       { expiresIn: "24h" }
     );
 
-    const cookieOptions = {
+    const cookieOptions: CookieOptions = {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     };
 
     res.cookie("Authorization", token, cookieOptions);
 
     res.json({
-      msg: "Signin in successfully",
+      msg: "Signed in successfully",
       token: token,
     });
   } catch (err) {
@@ -101,3 +102,12 @@ export const signin = async (req: Request, res: Response) => {
     });
   }
 };
+
+const signOut = (res: Response) => {
+  res.clearCookie("Authorization");
+  res.json({
+    msg: "User signed out.",
+  });
+};
+
+export { signUp, signin, signOut };

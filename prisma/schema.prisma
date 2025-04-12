@@ -24,6 +24,7 @@ model Note{
   isDeleted Boolean @default(false)
   folder Folder @relation(fields : [folderId], references: [id], onDelete: Cascade )
   folderId String
+  preview String
 }
 
 model Folder {

@@ -10,13 +10,14 @@ const getAll = async (req: Request, res: Response) => {
           equals: userId,
         },
       },
-      include: {
-        content: true,
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
     res.json({
       data: folders,
+      total: folders.length,
     });
   } catch (err) {
     res.status(500).json({
