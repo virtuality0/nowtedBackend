@@ -72,6 +72,14 @@ const getByFolderId = async (req: Request, res: Response) => {
 const update = async (req: Request, res: Response) => {
   const noteId = req.params.noteId;
   const updatedBody = req.body;
+
+  if (!updatedBody.title) {
+    res.status(400).json({
+      msg: "Empty title.",
+    });
+
+    return;
+  }
   try {
     await prisma.note.update({
       where: {
@@ -79,6 +87,9 @@ const update = async (req: Request, res: Response) => {
       },
       data: {
         modifiedAt: new Date().toISOString(),
+        preview:
+          updatedBody.content.slice(0, 15) +
+          (updatedBody.content.length > 15 ? "..." : ""),
         ...updatedBody,
       },
     });
