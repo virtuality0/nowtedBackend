@@ -153,10 +153,19 @@ const restore = async (req: Request, res: Response) => {
 };
 
 const recent = async (req: Request, res: Response) => {
+  const { isDeleted, isFavorite, isArchived } = req.query;
   try {
     const notes = await prisma.note.findMany({
       where: {
-        isDeleted: false,
+        isDeleted: {
+          equals: isDeleted === "true",
+        },
+        isArchived: {
+          equals: isArchived === "true",
+        },
+        isFavorite: {
+          equals: isFavorite === "true",
+        },
       },
       orderBy: {
         createdAt: "desc",
