@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://nowted-frontend.vercel.app/",
+    origin: process.env.FE_URL ?? "",
     credentials: true,
     methods: ["GET", "POST", "DELETE", "PATCH"],
   })

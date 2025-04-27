@@ -81,8 +81,8 @@ const update = async (req: Request, res: Response) => {
         id: folderId,
       },
       data: {
-        name: updatedBody.name,
-        modifiedAt: new Date().toLocaleDateString(),
+        ...updatedBody,
+        modifiedAt: new Date().toISOString(),
       },
     });
 
