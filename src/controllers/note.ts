@@ -175,6 +175,7 @@ const recent = async (req: Request, res: Response) => {
     res.json({
       data: notes,
       total: notes.length,
+      folderName: "Recent Notes",
     });
   } catch (err) {
     res.status(500).json({
