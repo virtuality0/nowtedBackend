@@ -28,11 +28,11 @@ const add = async (req: Request, res: Response) => {
 };
 
 const getByFolderId = async (req: Request, res: Response) => {
-  const folderId = req.query.folderId ?? "";
+  const { folderId, page = 1, limit = 10 } = req.query;
   try {
     const folder = await prisma.folder.findFirst({
       where: {
-        id: folderId.toString(),
+        id: folderId?.toString(),
       },
     });
 
@@ -43,22 +43,34 @@ const getByFolderId = async (req: Request, res: Response) => {
 
       return;
     }
+
+    const totalDocuments = await prisma.note.count({
+      where: {
+        folderId: {
+          equals: folderId?.toString(),
+        },
+        isDeleted: false,
+      },
+    });
+
     const notes = await prisma.note.findMany({
       where: {
         folderId: {
-          equals: folderId.toString(),
+          equals: folderId?.toString(),
         },
         isDeleted: false,
       },
       orderBy: {
         createdAt: "desc",
       },
+      skip: (parseInt(page.toString()) - 1) * parseInt(limit.toString()),
+      take: parseInt(page.toString()) * parseInt(limit.toString()),
     });
 
     res.json({
       data: notes,
       folderName: folder.name,
-      total: notes.length,
+      total: totalDocuments,
     });
   } catch (err) {
     res.status(500).json({
