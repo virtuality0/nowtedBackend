@@ -165,7 +165,7 @@ const restore = async (req: Request, res: Response) => {
 };
 
 const recent = async (req: Request, res: Response) => {
-  const { isDeleted, isFavorite, isArchived } = req.query;
+  const { isDeleted, isFavorite, isArchived, search } = req.query;
   try {
     const notes = await prisma.note.findMany({
       where: {
@@ -177,6 +177,9 @@ const recent = async (req: Request, res: Response) => {
         },
         isFavorite: {
           equals: isFavorite === "true",
+        },
+        title: {
+          contains: search?.toString(),
         },
       },
       orderBy: {
