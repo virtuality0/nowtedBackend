@@ -102,8 +102,8 @@ const signin = async (req: Request, res: Response) => {
   }
 };
 
-const signOut = (res: Response) => {
-  res.clearCookie("Authorization");
+const signOut = (_: Request, res: Response) => {
+  res.cookie("Authorization", "");
   res.json({
     msg: "User signed out.",
   });
