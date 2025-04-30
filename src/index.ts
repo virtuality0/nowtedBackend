@@ -14,11 +14,14 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FE_URL ?? "",
+    origin: process.env.ALLOWED_ORIGINS,
     credentials: true,
     methods: ["GET", "POST", "DELETE", "PATCH"],
   })
 );
+
+//Preflight request handling
+app.options("/{*any}", cors());
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/folder", folderRouter);
